@@ -439,24 +439,31 @@ class GuineenewsScraper(BaseScraper):
         """Génère un identifiant unique basé sur l'URL."""
         return hashlib.sha256(url.encode('utf-8')).hexdigest()
 
-    def is_article_from_today(self, published_date: Optional[datetime], days_back: int = 0) -> bool:
+    def is_article_in_date_range(self, published_date: Optional[datetime], days_back: int = 0, only_yesterday: bool = False) -> bool:
         """
         Vérifie si l'article est dans la plage de dates acceptable.
 
         Args:
             published_date: Date de publication de l'article
-            days_back: Nombre de jours en arrière à accepter (0 = aujourd'hui seulement, 1 = aujourd'hui + hier)
+            days_back: Nombre de jours en arrière à accepter (0 = aujourd'hui seulement)
+            only_yesterday: Si True, ne capture QUE le jour précédent (ignore aujourd'hui)
         """
         if not published_date:
-            # Si pas de date, on considère que c'est potentiellement du jour
+            # Si pas de date, on considère que c'est potentiellement valide
             return True
 
+        from datetime import timedelta
         today = date.today()
         article_date = published_date.date()
-        # Accepter les articles d'aujourd'hui jusqu'à (aujourd'hui - days_back)
-        from datetime import timedelta
-        min_date = today - timedelta(days=days_back)
-        return min_date <= article_date <= today
+
+        if only_yesterday:
+            # Ne capturer QUE les articles de la veille
+            yesterday = today - timedelta(days=1)
+            return article_date == yesterday
+        else:
+            # Capturer aujourd'hui jusqu'à (aujourd'hui - days_back)
+            min_date = today - timedelta(days=days_back)
+            return min_date <= article_date <= today
 
     def extract_date_from_url(self, url: str) -> Optional[datetime]:
         """
@@ -481,6 +488,7 @@ class GuineenewsScraper(BaseScraper):
         max_articles: int = 50,
         only_today: bool = True,
         days_back: int = 0,
+        only_yesterday: bool = False,
     ) -> List[Dict[str, Any]]:
         """
         Scrape tous les articles d'une catégorie.
@@ -490,7 +498,8 @@ class GuineenewsScraper(BaseScraper):
             categorie_name: Nom de la catégorie
             max_articles: Nombre maximum d'articles à récupérer
             only_today: Si True, ne récupère que les articles récents
-            days_back: Nombre de jours en arrière à inclure (0 = aujourd'hui, 1 = aujourd'hui + hier)
+            days_back: Nombre de jours en arrière à inclure (0 = aujourd'hui)
+            only_yesterday: Si True, ne capture QUE les articles de la veille
 
         Returns:
             Liste des articles avec leur contenu complet
@@ -523,7 +532,7 @@ class GuineenewsScraper(BaseScraper):
 
             # Filtrer les articles qui ne sont pas dans la plage de dates
             if only_today and published_date:
-                if not self.is_article_from_today(published_date, days_back):
+                if not self.is_article_in_date_range(published_date, days_back, only_yesterday):
                     logger.debug(f"Article ignoré (hors plage, date={published_date.date()}): {url}")
                     continue
 
@@ -547,7 +556,7 @@ class GuineenewsScraper(BaseScraper):
 
                     # Revérifier que c'est bien un article dans la plage après avoir lu le contenu
                     if only_today and article_data.get("date_publication"):
-                        if not self.is_article_from_today(article_data["date_publication"], days_back):
+                        if not self.is_article_in_date_range(article_data["date_publication"], days_back, only_yesterday):
                             logger.debug(f"Article ignoré après lecture (hors plage): {url}")
                             continue
 
@@ -612,6 +621,7 @@ class GuineenewsScraper(BaseScraper):
         max_articles_per_category: int = 50,
         only_today: bool = True,
         days_back: int = 0,
+        only_yesterday: bool = False,
     ) -> List[Dict[str, Any]]:
         """
         Scrape toutes les catégories configurées.
@@ -620,7 +630,8 @@ class GuineenewsScraper(BaseScraper):
             category_configs: Liste de dict avec 'url' et 'categorie'
             max_articles_per_category: Nombre max d'articles par catégorie
             only_today: Si True, ne récupère que les articles récents
-            days_back: Nombre de jours en arrière à inclure (0 = aujourd'hui, 1 = aujourd'hui + hier)
+            days_back: Nombre de jours en arrière à inclure (0 = aujourd'hui)
+            only_yesterday: Si True, ne capture QUE les articles de la veille
 
         Returns:
             Liste de tous les articles collectés
@@ -643,6 +654,7 @@ class GuineenewsScraper(BaseScraper):
                 max_articles=max_articles_per_category,
                 only_today=only_today,
                 days_back=days_back,
+                only_yesterday=only_yesterday,
             )
 
             # Éviter les doublons (un article peut apparaître dans plusieurs catégories)

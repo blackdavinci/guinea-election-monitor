@@ -86,18 +86,18 @@ def load_sources_config() -> List[Dict[str, Any]]:
 class ElectionMonitor:
     """Classe principale pour orchestrer le scraping."""
 
-    def __init__(self, logger: logging.Logger, days_back: int = 1):
+    def __init__(self, logger: logging.Logger, only_yesterday: bool = True):
         """
         Args:
             logger: Logger pour les messages
-            days_back: Nombre de jours en arrière à scraper (1 = aujourd'hui + hier)
+            only_yesterday: Si True, ne scrape QUE les articles de la veille (idéal pour cron à 1h du matin)
         """
         self.logger = logger
         self.keywords_dict = load_keywords_config()
         self.sources_config = load_sources_config()
         self.notification_manager = NotificationManager()
         self.relevance_threshold = SCRAPING_CONFIG["relevance_threshold"]
-        self.days_back = days_back
+        self.only_yesterday = only_yesterday
 
     def run(self, source_names: Optional[List[str]] = None) -> Dict[str, Any]:
         """
@@ -216,12 +216,12 @@ class ElectionMonitor:
                     encoding=source.encoding or "utf-8",
                 )
 
-                # Scraper toutes les catégories (articles du jour + jours précédents selon days_back)
+                # Scraper les articles (veille uniquement si only_yesterday=True)
                 all_articles = scraper.scrape_all_categories(
                     category_configs=category_urls,
                     max_articles_per_category=30,
                     only_today=True,
-                    days_back=self.days_back,
+                    only_yesterday=self.only_yesterday,
                 )
                 scraper.close()
 
@@ -253,12 +253,12 @@ class ElectionMonitor:
                     use_curl=True,  # Utiliser curl pour contourner les problèmes de connexion
                 )
 
-                # Scraper toutes les catégories (articles du jour + jours précédents selon days_back)
+                # Scraper les articles (veille uniquement si only_yesterday=True)
                 all_articles = scraper.scrape_all_categories(
                     category_configs=category_urls,
                     max_articles_per_category=30,
                     only_today=True,
-                    days_back=self.days_back,
+                    only_yesterday=self.only_yesterday,
                 )
                 scraper.close()
 
