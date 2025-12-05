@@ -1,0 +1,251 @@
+sources:
+  # ============================================
+  # SITES ACTIFS - 10 sources
+  # ============================================
+
+  - name: Guineenews
+    base_url: https://guineenews.org
+    category_urls:
+      - url: https://guineenews.org/category/politique/
+        categorie: Politique
+      - url: https://guineenews.org/tag/elections/
+        categorie: Élections
+      - url: https://guineenews.org/category/societe/
+        categorie: Société
+      - url: https://guineenews.org/category/economie/
+        categorie: Économie
+      - url: https://guineenews.org/category/sport/
+        categorie: Sport
+      - url: https://guineenews.org/category/lemonde/
+        categorie: Le Monde
+      - url: https://guineenews.org/category/region/
+        categorie: Région
+      - url: https://guineenews.org/category/interviews/
+        categorie: Interviews
+      - url: https://guineenews.org/category/granddossiers/
+        categorie: Grands Dossiers
+      - url: https://guineenews.org/category/faitsdivers/
+        categorie: Faits Divers
+    scraper_type: guineenews
+    encoding: utf-8
+    is_active: true
+
+  - name: Guinée7
+    base_url: https://www.guinee7.com
+    category_urls:
+      - url: https://www.guinee7.com/category/politique/
+        categorie: Politique
+      - url: https://www.guinee7.com/category/societe/
+        categorie: Société
+      - url: https://www.guinee7.com/category/economie/
+        categorie: Économie
+      - url: https://www.guinee7.com/category/actualites/
+        categorie: Actualités
+      - url: https://www.guinee7.com/category/justice/
+        categorie: Justice
+      - url: https://www.guinee7.com/category/interview/
+        categorie: Interview
+      - url: https://www.guinee7.com/category/sportculture/
+        categorie: Sport/Culture
+      - url: https://www.guinee7.com/category/education/
+        categorie: Éducation
+      - url: https://www.guinee7.com/category/7verite/
+        categorie: 7vérité
+      - url: https://www.guinee7.com/category/tribune/
+        categorie: Tribune
+    scraper_type: wordpress
+    site_type: guinee7
+    encoding: utf-8
+    is_active: true
+
+  - name: Ledjely
+    base_url: https://ledjely.com
+    category_urls:
+      - url: https://ledjely.com/category/politique/
+        categorie: Politique
+      - url: https://ledjely.com/category/societe/
+        categorie: Société
+      - url: https://ledjely.com/category/economie/
+        categorie: Économie
+      - url: https://ledjely.com/category/a-la-une/
+        categorie: À la une
+      - url: https://ledjely.com/category/actualites/
+        categorie: Actualités
+      - url: https://ledjely.com/category/international/
+        categorie: International
+      - url: https://ledjely.com/category/interview/
+        categorie: Interview
+      - url: https://ledjely.com/category/regions/
+        categorie: Régions
+    scraper_type: wordpress
+    site_type: ledjely
+    encoding: utf-8
+    is_active: true
+
+  - name: Guinée360
+    base_url: https://guinee360.com
+    category_urls:
+      - url: https://guinee360.com/categorie/politique/
+        categorie: Politique
+      - url: https://guinee360.com/categorie/societe/
+        categorie: Société
+      - url: https://guinee360.com/categorie/economie/
+        categorie: Économie
+      - url: https://guinee360.com/categorie/actualite/
+        categorie: Actualité
+      - url: https://guinee360.com/categorie/international/
+        categorie: International
+    scraper_type: wordpress
+    site_type: guinee360
+    encoding: utf-8
+    is_active: true
+
+  - name: Mosaique Guinée
+    base_url: https://mosaiqueguinee.com
+    category_urls:
+      - url: https://mosaiqueguinee.com/politique/
+        categorie: Politique
+      - url: https://mosaiqueguinee.com/societe/
+        categorie: Société
+      - url: https://mosaiqueguinee.com/economie/
+        categorie: Économie
+      - url: https://mosaiqueguinee.com/actualites/
+        categorie: Actualités
+      - url: https://mosaiqueguinee.com/international/
+        categorie: International
+      - url: https://mosaiqueguinee.com/justice/
+        categorie: Justice
+      - url: https://mosaiqueguinee.com/culture/
+        categorie: Culture
+      - url: https://mosaiqueguinee.com/sports/
+        categorie: Sports
+      - url: https://mosaiqueguinee.com/region/
+        categorie: Région
+      - url: https://mosaiqueguinee.com/defense/
+        categorie: Défense
+      - url: https://mosaiqueguinee.com/diplomatie/
+        categorie: Diplomatie
+      - url: https://mosaiqueguinee.com/education/
+        categorie: Éducation
+      - url: https://mosaiqueguinee.com/mines/
+        categorie: Mines
+      - url: https://mosaiqueguinee.com/sante/
+        categorie: Santé
+    scraper_type: wordpress
+    site_type: mosaiqueguinee
+    encoding: utf-8
+    is_active: true
+
+  - name: Vision Guinée
+    base_url: https://www.visionguinee.info
+    category_urls:
+      - url: https://www.visionguinee.info/category/politique/
+        categorie: Politique
+      - url: https://www.visionguinee.info/category/societe/
+        categorie: Société
+      - url: https://www.visionguinee.info/category/economie/
+        categorie: Économie
+      - url: https://www.visionguinee.info/category/interview/
+        categorie: Interview
+      - url: https://www.visionguinee.info/category/sport/
+        categorie: Sport
+      - url: https://www.visionguinee.info/category/libre-opinion/
+        categorie: Tribune libre
+    scraper_type: wordpress
+    site_type: visionguinee
+    encoding: utf-8
+    is_active: true
+
+  - name: Média Guinée
+    base_url: https://mediaguinee.com
+    category_urls:
+      - url: https://mediaguinee.com/en-guinee/politique/
+        categorie: Politique
+      - url: https://mediaguinee.com/en-guinee/societe/
+        categorie: Société
+      - url: https://mediaguinee.com/en-guinee/economie/
+        categorie: Économie
+      - url: https://mediaguinee.com/en-guinee/culture/
+        categorie: Culture
+      - url: https://mediaguinee.com/en-guinee/tribune/
+        categorie: Tribune
+    scraper_type: wordpress
+    site_type: mediaguinee
+    encoding: utf-8
+    is_active: true
+
+  - name: Guinéematin
+    base_url: https://guineematin.com
+    category_urls:
+      - url: https://guineematin.com/category/politique/
+        categorie: Politique
+      - url: https://guineematin.com/category/societe/
+        categorie: Société
+      - url: https://guineematin.com/category/economie/
+        categorie: Économie
+      - url: https://guineematin.com/category/actualites/
+        categorie: Actualités
+      - url: https://guineematin.com/category/international/
+        categorie: International
+      - url: https://guineematin.com/category/faits-divers/
+        categorie: Faits Divers
+      - url: https://guineematin.com/category/diaspora/
+        categorie: Diaspora
+      - url: https://guineematin.com/category/interviews/
+        categorie: Interviews
+      - url: https://guineematin.com/category/sante/
+        categorie: Santé
+      - url: https://guineematin.com/category/ma-region/
+        categorie: Ma Région
+    scraper_type: wordpress
+    site_type: guineematin
+    encoding: utf-8
+    is_active: true
+
+  - name: Guinée114
+    base_url: https://www.guinee114.com
+    category_urls:
+      - url: https://www.guinee114.com/category/politique/
+        categorie: Politique
+      - url: https://www.guinee114.com/category/societe/
+        categorie: Société
+      - url: https://www.guinee114.com/category/economie/
+        categorie: Économie
+      - url: https://www.guinee114.com/category/actualite/
+        categorie: Actualité
+      - url: https://www.guinee114.com/category/international/
+        categorie: International
+      - url: https://www.guinee114.com/category/culture/
+        categorie: Culture
+      - url: https://www.guinee114.com/category/diaspora/
+        categorie: Diaspora
+      - url: https://www.guinee114.com/category/interviews/
+        categorie: Interviews
+      - url: https://www.guinee114.com/category/dossiers/
+        categorie: Dossiers
+      - url: https://www.guinee114.com/category/mines/
+        categorie: Mines
+      - url: https://www.guinee114.com/category/infos-regions/
+        categorie: Infos régions
+    scraper_type: wordpress
+    site_type: guinee114
+    encoding: utf-8
+    is_active: true
+
+  # ============================================
+  # SITES BLOQUÉS (403 Forbidden)
+  # ============================================
+
+  - name: Africaguinée
+    base_url: https://africaguinee.com
+    category_urls:
+      - url: https://africaguinee.com/category/politique/
+        categorie: Politique
+      - url: https://africaguinee.com/category/societe/
+        categorie: Société
+      - url: https://africaguinee.com/category/economie/
+        categorie: Économie
+    scraper_type: wordpress
+    site_type: africaguinee
+    encoding: utf-8
+    is_active: false  # Bloqué (403)

@@ -1,0 +1,26 @@
+version: '3.8'
+
+# Configuration pour utiliser Postgres.app local (pas de conteneur PostgreSQL)
+# Metabase sur port 3030 pour éviter conflit avec Valet
+
+services:
+  metabase:
+    image: metabase/metabase:latest
+    container_name: guinea_elections_metabase
+    environment:
+      # Metabase utilise H2 (base embarquée) pour ses données internes
+      # Plus simple pour le développement local
+      MB_SITE_NAME: "Veille Électorale Guinée"
+      MB_SITE_LOCALE: fr
+    ports:
+      - "3030:3000"
+    restart: unless-stopped
+    volumes:
+      - metabase_data:/metabase.db
+    # Accès au réseau host pour se connecter à Postgres.app
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+volumes:
+  metabase_data:
+    driver: local

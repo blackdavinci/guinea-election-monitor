@@ -1,0 +1,123 @@
+keywords:
+  election:
+    weight: 1.0
+    terms:
+      - élection
+      - élections
+      - scrutin
+      - vote
+      - voter
+      - votation
+      - urnes
+      - bulletin
+      - suffrage
+      - électoral
+      - électorale
+      - présidentielle
+      - législatives
+      - communales
+      - référendum
+      - plébiscite
+      - second tour
+      - premier tour
+      - ballottage
+
+  institutions:
+    weight: 0.9
+    terms:
+      - CENI
+      - Commission électorale
+      - Cour constitutionnelle
+      - CNT
+      - Conseil National de Transition
+      - CNRD
+      - Ministère de l'Administration du Territoire
+      - Haute Autorité de la Communication
+      - HAC
+      - Cour suprême
+      - Assemblée nationale
+      - Parlement
+
+  personnalites:
+    weight: 0.8
+    terms:
+      - Mamadi Doumbouya
+      - Alpha Condé
+      - Cellou Dalein
+      - Cellou Dalein Diallo
+      - Sidya Touré
+      - Lansana Kouyaté
+      - Fofana Moussa Dadis Camara
+      - Dadis Camara
+      - Sékouba Konaté
+      - Kassory Fofana
+      - Ibrahima Kassory Fofana
+      - Ousmane Gaoual Diallo
+      - Bah Oury
+      - Fodé Oussou Fofana
+      - Damaro Camara
+      - Amadou Damaro Camara
+
+  partis:
+    weight: 0.7
+    terms:
+      - RPG
+      - RPG Arc-en-ciel
+      - UFDG
+      - UFR
+      - PEDN
+      - opposition
+      - mouvance
+      - coalition
+      - ANAD
+      - FNDC
+      - Front National pour la Défense de la Constitution
+      - parti politique
+      - formation politique
+      - majorité présidentielle
+      - alliance
+
+  processus:
+    weight: 0.8
+    terms:
+      - transition
+      - chronogramme
+      - recensement électoral
+      - fichier électoral
+      - carte d'électeur
+      - campagne électorale
+      - candidature
+      - candidat
+      - investiture
+      - parrainage
+      - caution
+      - liste électorale
+      - bureau de vote
+      - procès-verbal
+      - dépouillement
+      - proclamation des résultats
+      - contentieux électoral
+      - recours
+      - observation électorale
+      - mission d'observation
+
+  gouvernance:
+    weight: 0.6
+    terms:
+      - constitution
+      - constitutionnel
+      - charte de la transition
+      - gouvernement
+      - premier ministre
+      - ministre
+      - décret
+      - ordonnance
+      - loi électorale
+      - code électoral
+      - réforme
+      - dialogue politique
+      - concertation nationale
+      - médiation
+      - CEDEAO
+      - Union Africaine
+      - sanctions
