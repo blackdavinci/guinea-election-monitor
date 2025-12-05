@@ -597,12 +597,22 @@ class WordPressScraper(BaseScraper):
         """Génère un identifiant unique basé sur l'URL."""
         return hashlib.sha256(url.encode('utf-8')).hexdigest()
 
-    def is_article_from_today(self, published_date: Optional[datetime]) -> bool:
-        """Vérifie si l'article est du jour."""
+    def is_article_from_today(self, published_date: Optional[datetime], days_back: int = 0) -> bool:
+        """
+        Vérifie si l'article est dans la plage de dates acceptable.
+
+        Args:
+            published_date: Date de publication de l'article
+            days_back: Nombre de jours en arrière à accepter (0 = aujourd'hui seulement, 1 = aujourd'hui + hier)
+        """
         if not published_date:
             return True
         today = date.today()
-        return published_date.date() == today
+        article_date = published_date.date()
+        # Accepter les articles d'aujourd'hui jusqu'à (aujourd'hui - days_back)
+        from datetime import timedelta
+        min_date = today - timedelta(days=days_back)
+        return min_date <= article_date <= today
 
     def extract_date_from_url(self, url: str) -> Optional[datetime]:
         """
@@ -627,8 +637,14 @@ class WordPressScraper(BaseScraper):
         categorie_name: str,
         max_articles: int = 50,
         only_today: bool = True,
+        days_back: int = 0,
     ) -> List[Dict[str, Any]]:
-        """Scrape tous les articles d'une catégorie."""
+        """
+        Scrape tous les articles d'une catégorie.
+
+        Args:
+            days_back: Nombre de jours en arrière à inclure (0 = aujourd'hui, 1 = aujourd'hui + hier)
+        """
         logger.info(f"[{self.source_name}] Scraping de {category_url} (catégorie: {categorie_name})")
 
         html = self.fetch_page(category_url, self.encoding)
@@ -658,10 +674,10 @@ class WordPressScraper(BaseScraper):
             if not published_date:
                 published_date = self.extract_date_from_url(url)
 
-            # Filtrer les articles qui ne sont pas du jour
+            # Filtrer les articles qui ne sont pas dans la plage de dates
             if only_today and published_date:
-                if not self.is_article_from_today(published_date):
-                    logger.debug(f"Article ignoré (pas du jour, date={published_date.date()}): {url}")
+                if not self.is_article_from_today(published_date, days_back):
+                    logger.debug(f"Article ignoré (hors plage, date={published_date.date()}): {url}")
                     continue
 
             articles_to_scrape.append({
@@ -683,7 +699,7 @@ class WordPressScraper(BaseScraper):
 
                     # Double vérification de la date (au cas où)
                     if only_today and article_data.get("date_publication"):
-                        if not self.is_article_from_today(article_data["date_publication"]):
+                        if not self.is_article_from_today(article_data["date_publication"], days_back):
                             continue
 
                     articles.append(article_data)
@@ -692,7 +708,7 @@ class WordPressScraper(BaseScraper):
                 logger.error(f"[{self.source_name}] Erreur lors du scraping de {url}: {e}")
                 continue
 
-        logger.info(f"[{self.source_name}] {len(articles)} articles du jour scrapés dans {categorie_name}")
+        logger.info(f"[{self.source_name}] {len(articles)} articles récents scrapés dans {categorie_name}")
         return articles
 
     def scrape_full_article(
@@ -737,8 +753,14 @@ class WordPressScraper(BaseScraper):
         category_configs: List[Dict[str, str]],
         max_articles_per_category: int = 50,
         only_today: bool = True,
+        days_back: int = 0,
     ) -> List[Dict[str, Any]]:
-        """Scrape toutes les catégories configurées."""
+        """
+        Scrape toutes les catégories configurées.
+
+        Args:
+            days_back: Nombre de jours en arrière à inclure (0 = aujourd'hui, 1 = aujourd'hui + hier)
+        """
         all_articles = []
         urls_seen = set()
 
@@ -756,6 +778,7 @@ class WordPressScraper(BaseScraper):
                 categorie_name=cat_name,
                 max_articles=max_articles_per_category,
                 only_today=only_today,
+                days_back=days_back,
             )
 
             for article in articles:

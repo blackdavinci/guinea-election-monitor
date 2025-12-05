@@ -86,12 +86,18 @@ def load_sources_config() -> List[Dict[str, Any]]:
 class ElectionMonitor:
     """Classe principale pour orchestrer le scraping."""
 
-    def __init__(self, logger: logging.Logger):
+    def __init__(self, logger: logging.Logger, days_back: int = 1):
+        """
+        Args:
+            logger: Logger pour les messages
+            days_back: Nombre de jours en arrière à scraper (1 = aujourd'hui + hier)
+        """
         self.logger = logger
         self.keywords_dict = load_keywords_config()
         self.sources_config = load_sources_config()
         self.notification_manager = NotificationManager()
         self.relevance_threshold = SCRAPING_CONFIG["relevance_threshold"]
+        self.days_back = days_back
 
     def run(self, source_names: Optional[List[str]] = None) -> Dict[str, Any]:
         """
@@ -210,11 +216,12 @@ class ElectionMonitor:
                     encoding=source.encoding or "utf-8",
                 )
 
-                # Scraper toutes les catégories (articles du jour uniquement)
+                # Scraper toutes les catégories (articles du jour + jours précédents selon days_back)
                 all_articles = scraper.scrape_all_categories(
                     category_configs=category_urls,
                     max_articles_per_category=30,
                     only_today=True,
+                    days_back=self.days_back,
                 )
                 scraper.close()
 
@@ -246,11 +253,12 @@ class ElectionMonitor:
                     use_curl=True,  # Utiliser curl pour contourner les problèmes de connexion
                 )
 
-                # Scraper toutes les catégories (articles du jour uniquement)
+                # Scraper toutes les catégories (articles du jour + jours précédents selon days_back)
                 all_articles = scraper.scrape_all_categories(
                     category_configs=category_urls,
                     max_articles_per_category=30,
                     only_today=True,
+                    days_back=self.days_back,
                 )
                 scraper.close()
 
