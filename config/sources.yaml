@@ -232,10 +232,6 @@ sources:
     encoding: utf-8
     is_active: true
 
-  # ============================================
-  # SITES BLOQUÉS (403 Forbidden)
-  # ============================================
-
   - name: Africaguinée
     base_url: https://africaguinee.com
     category_urls:
@@ -248,4 +244,4 @@ sources:
     scraper_type: wordpress
     site_type: africaguinee
     encoding: utf-8
-    is_active: false  # Bloqué (403)
+    is_active: true
