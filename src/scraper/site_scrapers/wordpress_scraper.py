@@ -27,6 +27,12 @@ from typing import List, Dict, Any, Optional
 from dateutil import parser as date_parser
 from bs4 import BeautifulSoup
 
+try:
+    import cloudscraper
+    CLOUDSCRAPER_AVAILABLE = True
+except ImportError:
+    CLOUDSCRAPER_AVAILABLE = False
+
 from ..base_scraper import BaseScraper
 
 logger = logging.getLogger(__name__)
@@ -113,6 +119,9 @@ class WordPressScraper(BaseScraper):
         },
     }
 
+    # Sites nécessitant cloudscraper (protection Cloudflare)
+    CLOUDSCRAPER_SITES = ["africaguinee"]
+
     def __init__(
         self,
         source_name: str,
@@ -127,6 +136,16 @@ class WordPressScraper(BaseScraper):
 
         self.encoding = encoding
         self.use_curl = use_curl
+        self.site_type = site_type
+
+        # Utiliser cloudscraper pour les sites protégés par Cloudflare
+        self.use_cloudscraper = site_type and site_type.lower() in self.CLOUDSCRAPER_SITES
+        self.cloudscraper_session = None
+        if self.use_cloudscraper and CLOUDSCRAPER_AVAILABLE:
+            self.cloudscraper_session = cloudscraper.create_scraper(
+                browser={'browser': 'chrome', 'platform': 'darwin', 'mobile': False}
+            )
+            logger.info(f"[{source_name}] Utilisation de cloudscraper pour contourner Cloudflare")
 
         # Déterminer la configuration à utiliser
         if site_type and site_type.lower() in self.SITE_CONFIGS:
@@ -181,10 +200,37 @@ class WordPressScraper(BaseScraper):
             logger.warning(f"Erreur curl pour {url}: {e}")
             return None
 
+    def fetch_with_cloudscraper(self, url: str, timeout: int = 60) -> Optional[str]:
+        """
+        Récupère une page en utilisant cloudscraper (contourne Cloudflare).
+        """
+        if not self.cloudscraper_session:
+            logger.warning(f"cloudscraper non disponible pour {url}")
+            return None
+
+        try:
+            response = self.cloudscraper_session.get(url, timeout=timeout)
+            if response.status_code == 200:
+                return response.text
+            else:
+                logger.warning(f"cloudscraper a échoué pour {url}: status {response.status_code}")
+                return None
+        except Exception as e:
+            logger.warning(f"Erreur cloudscraper pour {url}: {e}")
+            return None
+
     def fetch_page(self, url: str, encoding: str = "utf-8") -> Optional[str]:
         """
         Récupère une page avec fallback curl si nécessaire.
+        Utilise cloudscraper pour les sites protégés par Cloudflare.
         """
+        # Utiliser cloudscraper pour les sites protégés
+        if self.use_cloudscraper and self.cloudscraper_session:
+            html = self.fetch_with_cloudscraper(url)
+            if html and len(html) > 1000:
+                return html
+            logger.warning(f"[{self.source_name}] cloudscraper a échoué, fallback vers curl")
+
         if self.use_curl:
             html = self.fetch_with_curl(url)
             if html and len(html) > 1000:
