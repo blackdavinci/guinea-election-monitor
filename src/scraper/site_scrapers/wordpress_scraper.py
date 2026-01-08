@@ -110,12 +110,12 @@ class WordPressScraper(BaseScraper):
             "tags": "a[rel='tag']",
         },
         "africaguinee": {
-            "article_list": "article, .post",
-            "title": "h2 a, h3 a, .entry-title a",
-            "link": "h2 a, h3 a, .entry-title a",
-            "date": "time[datetime], .post-date",
-            "content": ".entry-content, .post-content",
-            "tags": "a[rel='tag']",
+            "article_list": ".second-post-cat, .first-post-cat",
+            "title": "p a.post-link, .col-lg-8 a.post-link",
+            "link": "p a.post-link, .col-lg-8 a.post-link",
+            "date": ".datetime",
+            "content": ".entry-content, .post-content, .article-content",
+            "tags": "a[rel='tag'], .cat-serif",
         },
     }
 
