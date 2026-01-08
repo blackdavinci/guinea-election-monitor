@@ -554,6 +554,12 @@ class WordPressScraper(BaseScraper):
 
     def _extract_date(self, soup: BeautifulSoup) -> Optional[datetime]:
         """Extrait la date de publication."""
+        # Cas spécial Africaguinée: chercher "Créé le X mois YYYY HH:MM"
+        if self.site_type and self.site_type.lower() == "africaguinee":
+            date = self._extract_africaguinee_article_date(soup)
+            if date:
+                return date
+
         # Essayer les sélecteurs configurés
         for sel in self.date_selector.split(", "):
             date_elem = soup.select_one(sel.strip())
@@ -568,6 +574,41 @@ class WordPressScraper(BaseScraper):
         meta_date = soup.find('meta', property='article:published_time')
         if meta_date and meta_date.get('content'):
             return self._parse_date(meta_date.get('content'))
+
+        return None
+
+    def _extract_africaguinee_article_date(self, soup: BeautifulSoup) -> Optional[datetime]:
+        """
+        Extrait la date depuis la page détail d'Africaguinée.
+        Format: "Créé le 8 janvier 2026 11:45"
+        """
+        # Chercher dans .article-content le span avec la date
+        content = soup.select_one(".article-content")
+        if not content:
+            return None
+
+        # Chercher tous les spans et textes contenant "Créé le"
+        text = content.get_text()
+        match = re.search(r'Créé le (\d{1,2}) (\w+) (\d{4})\s*(\d{1,2}):(\d{2})?', text)
+        if match:
+            day = int(match.group(1))
+            month_str = match.group(2).lower()
+            year = int(match.group(3))
+            hour = int(match.group(4)) if match.group(4) else 0
+            minute = int(match.group(5)) if match.group(5) else 0
+
+            french_months = {
+                "janvier": 1, "février": 2, "mars": 3, "avril": 4,
+                "mai": 5, "juin": 6, "juillet": 7, "août": 8,
+                "septembre": 9, "octobre": 10, "novembre": 11, "décembre": 12,
+            }
+
+            month = french_months.get(month_str)
+            if month:
+                try:
+                    return datetime(year, month, day, hour, minute)
+                except ValueError:
+                    pass
 
         return None
 
