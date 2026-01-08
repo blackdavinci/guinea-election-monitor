@@ -110,12 +110,12 @@ class WordPressScraper(BaseScraper):
             "tags": "a[rel='tag']",
         },
         "africaguinee": {
-            "article_list": ".second-post-cat, .first-post-cat",
-            "title": "p a.post-link, .col-lg-8 a.post-link",
-            "link": "p a.post-link, .col-lg-8 a.post-link",
-            "date": ".datetime",
-            "content": ".entry-content, .post-content, .article-content",
-            "tags": "a[rel='tag'], .cat-serif",
+            "article_list": ".row.article-list",
+            "title": "h2.article-title",
+            "link": ".col-md-10 a",
+            "date": ".col-md-2",  # Date spéciale: jour/mois/année séparés
+            "content": ".article-content",
+            "tags": "a[rel='tag']",
         },
     }
 
@@ -330,27 +330,41 @@ class WordPressScraper(BaseScraper):
         title = None
         url = None
 
-        # Essayer plusieurs sélecteurs pour le titre
-        for sel in self.title_selector.split(", "):
-            title_elem = element.select_one(sel.strip())
+        # Cas spécial Africaguinée: le titre et le lien sont séparés
+        if self.site_type and self.site_type.lower() == "africaguinee":
+            title_elem = element.select_one("h2.article-title")
             if title_elem:
                 title = title_elem.get_text(strip=True)
-                url = title_elem.get("href", "")
-                if title and url:
-                    break
+            link_elem = element.select_one(".col-md-10 a")
+            if link_elem:
+                url = link_elem.get("href", "")
+        else:
+            # Essayer plusieurs sélecteurs pour le titre
+            for sel in self.title_selector.split(", "):
+                title_elem = element.select_one(sel.strip())
+                if title_elem:
+                    title = title_elem.get_text(strip=True)
+                    url = title_elem.get("href", "")
+                    if title and url:
+                        break
 
         if url:
             url = self.make_absolute_url(url)
 
         # Extraire la date
         published_date = None
-        for sel in self.date_selector.split(", "):
-            date_elem = element.select_one(sel.strip())
-            if date_elem:
-                date_str = date_elem.get("datetime") or date_elem.get_text(strip=True)
-                if date_str:
-                    published_date = self._parse_date(date_str)
-                    break
+
+        # Cas spécial Africaguinée: date répartie sur plusieurs éléments
+        if self.site_type and self.site_type.lower() == "africaguinee":
+            published_date = self._extract_africaguinee_date(element)
+        else:
+            for sel in self.date_selector.split(", "):
+                date_elem = element.select_one(sel.strip())
+                if date_elem:
+                    date_str = date_elem.get("datetime") or date_elem.get_text(strip=True)
+                    if date_str:
+                        published_date = self._parse_date(date_str)
+                        break
 
         if not title or not url:
             return None
@@ -360,6 +374,48 @@ class WordPressScraper(BaseScraper):
             "url": url,
             "published_date": published_date,
         }
+
+    def _extract_africaguinee_date(self, element: BeautifulSoup) -> Optional[datetime]:
+        """
+        Extrait la date depuis la structure spéciale d'Africaguinée.
+        Structure: <div class="col-md-2">
+            <p>jeu</p>
+            <p class="article-date">8</p>
+            <p>janvier</p>
+            <p>2026</p>
+        </div>
+        """
+        date_container = element.select_one(".col-md-2")
+        if not date_container:
+            return None
+
+        paragraphs = date_container.find_all("p")
+        if len(paragraphs) < 4:
+            return None
+
+        try:
+            # paragraphs[0] = jour de la semaine (ignoré)
+            # paragraphs[1] = jour du mois (avec classe article-date)
+            # paragraphs[2] = mois
+            # paragraphs[3] = année
+            day = paragraphs[1].get_text(strip=True)
+            month = paragraphs[2].get_text(strip=True).lower()
+            year = paragraphs[3].get_text(strip=True)
+
+            # Convertir le mois français en anglais
+            french_months = {
+                "janvier": 1, "février": 2, "mars": 3, "avril": 4,
+                "mai": 5, "juin": 6, "juillet": 7, "août": 8,
+                "septembre": 9, "octobre": 10, "novembre": 11, "décembre": 12,
+            }
+
+            month_num = french_months.get(month)
+            if month_num and day.isdigit() and year.isdigit():
+                return datetime(int(year), month_num, int(day))
+        except (IndexError, ValueError) as e:
+            logger.debug(f"Erreur extraction date Africaguinée: {e}")
+
+        return None
 
     def parse_article_content(self, html: str) -> Dict[str, Any]:
         """
